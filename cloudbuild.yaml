@@ -49,7 +49,6 @@ steps:
       - --region=${_REGION}
       - --platform=managed
       - --allow-unauthenticated
-      - --no-traffic
       - --set-env-vars=COMMIT_SHA=$SHORT_SHA,DEPLOY_TAG=main
 
   - id: switch-traffic
