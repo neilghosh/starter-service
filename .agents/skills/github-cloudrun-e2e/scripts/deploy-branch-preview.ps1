@@ -5,7 +5,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$Project = "swiss-knife-c662b",
+    [string]$Project = "demoneil",
     [string]$Region = "us-central1",
     [string]$ServiceName = "starter-service",
     [string]$ArRepo = "starter-service",

@@ -17,7 +17,7 @@ Follow these steps in order to verify system connectivity, test locally in a bro
 
 Default parameters used across scripts (override with CLI flags as needed):
 - **GitHub Repo**: `neilghosh/starter-service`
-- **GCP Project**: `swiss-knife-c662b`
+- **GCP Project**: `demoneil`
 - **GCP Region**: `us-central1`
 - **Cloud Run Service / Artifact Registry Repo**: `starter-service`
 
@@ -30,7 +30,7 @@ Run the non-destructive diagnostic script first to inspect CLI tools, GitHub aut
 ```powershell
 .\.agents\skills\github-cloudrun-e2e\scripts\check-connectivity.ps1 `
   -Repo neilghosh/starter-service `
-  -Project swiss-knife-c662b `
+  -Project demoneil `
   -Region us-central1 `
   -ServiceName starter-service
 ```
@@ -94,7 +94,7 @@ Run the idempotent CI/CD setup script to enable GCP APIs, create the Artifact Re
 ```powershell
 .\.agents\skills\github-cloudrun-e2e\scripts\setup-cloudbuild-cicd.ps1 `
   -Repo neilghosh/starter-service `
-  -Project swiss-knife-c662b `
+  -Project demoneil `
   -Region us-central1 `
   -ServiceName starter-service `
   -ConnectionName github-connection
@@ -113,14 +113,14 @@ To deploy immediately from your local checkout without waiting for a GitHub push
 
 ```powershell
 $sha = (git rev-parse --short HEAD)
-gcloud builds submit --project=swiss-knife-c662b --region=us-central1 `
+gcloud builds submit --project=demoneil --region=us-central1 `
   --config=cloudbuild.yaml `
   --substitutions="_REGION=us-central1,_AR_REPO=starter-service,_SERVICE=starter-service,SHORT_SHA=$sha"
 ```
 
 Verify the live service URL:
 ```powershell
-$url = gcloud run services describe starter-service --project=swiss-knife-c662b --region=us-central1 --format="value(status.url)"
+$url = gcloud run services describe starter-service --project=demoneil --region=us-central1 --format="value(status.url)"
 Invoke-RestMethod "$url/health"
 ```
 
@@ -137,7 +137,7 @@ To test changes from any non-`main` branch on Cloud Run **without affecting prod
 2. Deploy the branch as a tagged preview revision:
    ```powershell
    .\.agents\skills\github-cloudrun-e2e\scripts\deploy-branch-preview.ps1 `
-     -Project swiss-knife-c662b `
+     -Project demoneil `
      -Region us-central1 `
      -ServiceName starter-service
    ```
@@ -160,11 +160,11 @@ To test changes from any non-`main` branch on Cloud Run **without affecting prod
 3. Merge the PR (`gh pr merge --squash`).
 4. Watch the triggered Cloud Build run:
    ```powershell
-   gcloud builds list --project=swiss-knife-c662b --region=us-central1 --limit=5
+   gcloud builds list --project=demoneil --region=us-central1 --limit=5
    ```
 5. Confirm Cloud Run traffic switched to the newly built revision:
    ```powershell
-   gcloud run services describe starter-service --project=swiss-knife-c662b --region=us-central1 --format="yaml(status.traffic)"
+   gcloud run services describe starter-service --project=demoneil --region=us-central1 --format="yaml(status.traffic)"
    ```
 
 For errors and fixes, consult [references/troubleshooting.md](./references/troubleshooting.md).
