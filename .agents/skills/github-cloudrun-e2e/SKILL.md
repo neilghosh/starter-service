@@ -104,8 +104,8 @@ Run the idempotent CI/CD setup script to enable GCP APIs, create the Artifact Re
 - When a PR is merged to `main`, Cloud Build automatically executes `cloudbuild.yaml`:
   1. Runs `npm test`
   2. Builds & pushes the Docker image tagged with `$SHORT_SHA` and `latest`
-  3. Deploys a new Cloud Run revision with `--no-traffic`
-  4. Runs `gcloud run services update-traffic starter-service --region=us-central1 --to-latest` to switch 100% traffic to the new revision.
+  3. Deploys a new Cloud Run revision
+  4. Runs `gcloud run services update-traffic starter-service --region=us-central1 --to-latest` to ensure 100% traffic routes to the new revision.
 
 ### Manual Initial Cloud Run Deploy (Optional / Before First PR Merge)
 
