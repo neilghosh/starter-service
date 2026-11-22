@@ -1,0 +1,13 @@
+{
+  "name": "starter-service",
+  "version": "1.0.0",
+  "description": "Minimal Cloud Run starter web service with GitHub & Cloud Build E2E CI/CD skill",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

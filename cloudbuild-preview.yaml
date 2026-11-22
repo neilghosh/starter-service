@@ -1,0 +1,53 @@
+# Cloud Build pipeline for non-default feature branch / PR preview deployments:
+# Deploys a tagged Cloud Run revision with --no-traffic so production traffic on `main` is unaffected.
+substitutions:
+  _REGION: us-central1
+  _AR_REPO: starter-service
+  _SERVICE: starter-service
+  _TAG: preview
+  _COMMIT_SHA: manual
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - id: test
+    name: node:20-alpine
+    entrypoint: npm
+    args: ['test']
+
+  - id: build-image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - COMMIT_SHA=${_COMMIT_SHA}
+      - --build-arg
+      - DEPLOY_TAG=${_TAG}
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:${_TAG}-${_COMMIT_SHA}
+      - .
+
+  - id: push-image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:${_TAG}-${_COMMIT_SHA}
+
+  - id: deploy-preview-revision
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:${_TAG}-${_COMMIT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --no-traffic
+      - --tag=${_TAG}
+      - --set-env-vars=COMMIT_SHA=${_COMMIT_SHA},DEPLOY_TAG=${_TAG}
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:${_TAG}-${_COMMIT_SHA}
